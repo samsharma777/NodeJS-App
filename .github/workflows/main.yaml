@@ -49,7 +49,7 @@ jobs:
       - name: Log in to Nexus Docker Registry
         uses: docker/login-action@v3
         with:
-          registry: 192.168.1.75:8081
+          registry: http://192.168.1.75:8081/#browse/browse:maven-public1
           username: ${{ secrets.NEXUS_USERNAME }}
           password: ${{ secrets.NEXUS_PASSWORD }}
 
@@ -57,7 +57,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: 192.168.1.75:8081/repository/maven-public/
+          images: 192.168.1.75:8081/dotnet-app
 
       - name: Build and push image to Nexus
         uses: docker/build-push-action@v5
