@@ -57,7 +57,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: 192.168.1.75:8083/dotnet-app
+          images: 192.168.1.75:8081/repository/maven-public/
 
       - name: Build and push image to Nexus
         uses: docker/build-push-action@v5
