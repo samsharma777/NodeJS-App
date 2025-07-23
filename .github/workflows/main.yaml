@@ -1,34 +1,68 @@
-name: Publish Docker image 
+# name: Publish Docker image 
+
+# on:
+#   push:
+#     branches: ['main']
+
+# jobs:
+#   push_to_registry:
+#     name: Push Docker image to Docker Hub
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Check out the repo
+#         uses: actions/checkout@v3
+      
+#       - name: Log in to Docker Hub
+#         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+#         with:
+#           username: ${{ secrets.DOCKER_USERNAME }} # Set this secret in GitHub settings
+#           password: ${{ secrets.DOCKER_PASSWORD }} # Set this secret in GitHub settings
+
+#       - name: Extract metadata (tags, labels) for Docker
+#         id: meta
+#         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+#         with:
+#           images: samsharma202247/dotnet-app # This is your Docker repository name, replace `adijaiswal/Node-JS` with `mike/dev`
+      
+#       - name: Build and push Docker image
+#         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+#         with:
+#           context: .
+#           push: true
+#           tags: ${{ steps.meta.outputs.tags }} # This will automatically handle tags for your image
+#           labels: ${{ steps.meta.outputs.labels }} # This will add metadata to the image
+
+name: Publish Docker image to Nexus
 
 on:
   push:
     branches: ['main']
 
 jobs:
-  push_to_registry:
-    name: Push Docker image to Docker Hub
+  push_to_nexus:
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
-      
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }} # Set this secret in GitHub settings
-          password: ${{ secrets.DOCKER_PASSWORD }} # Set this secret in GitHub settings
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      - name: Log in to Nexus Docker Registry
+        uses: docker/login-action@v3
         with:
-          images: samsharma202247/dotnet-app # This is your Docker repository name, replace `adijaiswal/Node-JS` with `mike/dev`
-      
-      - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+          registry: 192.168.1.75:8083
+          username: ${{ secrets.NEXUS_USERNAME }}
+          password: ${{ secrets.NEXUS_PASSWORD }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: 192.168.1.75:8083/dotnet-app
+
+      - name: Build and push image to Nexus
+        uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }} # This will automatically handle tags for your image
-          labels: ${{ steps.meta.outputs.labels }} # This will add metadata to the image
-
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
